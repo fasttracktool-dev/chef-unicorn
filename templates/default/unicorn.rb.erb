@@ -69,7 +69,6 @@ preload_app <%= @preload_app %>
 # for more information.
 worker_processes <%= @worker_processes %>
 
-<% if @before_fork %>
 # What to do before we fork a worker
 before_fork do |server, worker|
   # If Active Record is loaded: disconnect/close connections on the master process.
@@ -96,19 +95,21 @@ before_fork do |server, worker|
       # someone else did our job for us
     end
   end
+<% if @before_fork %>
   <%= @before_fork %>
-end
 <% end %>
+end
 
-<% if @after_fork %>
+
 # if Active Record is loaded re-establish the connection on each worker.
 after_fork do |server, worker|
   if defined?(ActiveRecord::Base)
     ActiveRecord::Base.establish_connection
   end
+<% if @after_fork %>
   <%= @after_fork %>
-end
 <% end %>
+end
 
 <% if @pid %>
 # sets the +path+ for the PID file of the unicorn master process
